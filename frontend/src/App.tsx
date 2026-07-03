@@ -19,6 +19,9 @@ import { StartupCard } from "./components/StartupCard";
 import { SolutionCard } from "./components/SolutionCard";
 import { BlueprintCard } from "./components/BlueprintCard";
 
+// Set axios base URL from environment variable for Render backend compatibility
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || "";
+
 // Define Analysis Result Schema matching backend
 interface AnalysisResult {
   problems: Array<{ id: string; problem: string; description: string }>;
