@@ -26,6 +26,18 @@ app.use((req, res, next) => {
 // API Routes
 app.use('/api', analyzeRoutes);
 
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({
+    message: "ProblemfiX AI Backend Running",
+    status: "success",
+    endpoints: [
+      "/health",
+      "/api/analyze"
+    ]
+  });
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', time: new Date().toISOString() });
