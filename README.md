@@ -2,7 +2,7 @@
 
 > Discover startup opportunities from real-world problems.
 
-ProblemfiX AI is a modern, responsive, and production-ready web application designed to help founders, students, startups, and businesses identify valuable problems worth solving. The application takes an industry, niche, or topic, searches the web for real-world discussions, negative reviews, and user pain points, and processes these findings through advanced AI engines (Gemini, Groq and OpenAI) to deliver actionable startup concepts, technical solution frameworks, opportunity scorecards, and development roadmaps.
+ProblemfiX AI is a modern, responsive, and production-ready web application designed to help founders, students, startups, and businesses identify valuable problems worth solving. The application takes an industry, niche, or topic, searches the web for real-world discussions, negative reviews, and user pain points, and processes these findings through advanced AI engines (Gemini, Groq llama, groq Deepseek R1 and OpenAI) to deliver actionable startup concepts, technical solution frameworks, opportunity scorecards, and development roadmaps.
 
 ---
 
