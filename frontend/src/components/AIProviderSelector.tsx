@@ -32,6 +32,14 @@ export const modelsList: AIModelOption[] = [
     badge: "Fast Llama",
   },
   {
+    id: "llama-3.1-8b-instant",
+    provider: "groq",
+    name: "Groq Llama 3.1 8B",
+    description:
+      "High rate limit model. Fast, lightweight, and efficient for high-frequency scanning.",
+    badge: "High Limit",
+  },
+  {
     id: "deepseek-r1",
     provider: "groq",
     name: "Groq DeepSeek R1",
