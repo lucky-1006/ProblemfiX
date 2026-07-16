@@ -42,20 +42,51 @@ export const analyzeIndustry = async (req: Request, res: Response) => {
 
     // Select AI Provider
     const aiProviderType = (provider || 'openai').toLowerCase().trim();
-    let aiProvider: AIProvider;
 
+    const providersToTry: { name: string; getProvider: () => AIProvider }[] = [];
+    
+    // First, try the user selected provider
     if (aiProviderType === 'groq') {
-      aiProvider = new GroqProvider();
+      providersToTry.push({ name: 'groq', getProvider: () => new GroqProvider() });
     } else if (aiProviderType === 'gemini') {
-      aiProvider = new GeminiProvider();
+      providersToTry.push({ name: 'gemini', getProvider: () => new GeminiProvider() });
     } else {
-      aiProvider = new OpenAIProvider();
+      providersToTry.push({ name: 'openai', getProvider: () => new OpenAIProvider() });
     }
 
-    console.log(`[Backend] Invoking AI Provider: "${aiProviderType}" (model: ${model || 'default'})`);
-    const analysis = await aiProvider.analyze(industry.trim(), searchResults, model);
+    // Then, append other configured providers as fallbacks
+    if (aiProviderType !== 'gemini' && process.env.GEMINI_API_KEY) {
+      providersToTry.push({ name: 'gemini', getProvider: () => new GeminiProvider() });
+    }
+    if (aiProviderType !== 'openai' && process.env.OPENAI_API_KEY) {
+      providersToTry.push({ name: 'openai', getProvider: () => new OpenAIProvider() });
+    }
+    if (aiProviderType !== 'groq' && process.env.GROQ_API_KEY) {
+      providersToTry.push({ name: 'groq', getProvider: () => new GroqProvider() });
+    }
 
-    return res.json(analysis);
+    let lastError: any = null;
+
+    for (const prov of providersToTry) {
+      try {
+        const modelToUse = prov.name === aiProviderType ? model : undefined;
+        console.log(`[Backend] Invoking AI Provider: "${prov.name}" (model: ${modelToUse || 'default'})`);
+        const providerInstance = prov.getProvider();
+        const analysis = await providerInstance.analyze(industry.trim(), searchResults, modelToUse);
+        if (analysis) {
+          return res.json(analysis);
+        }
+      } catch (err: any) {
+        lastError = err;
+        console.warn(`[Backend] AI Provider "${prov.name}" failed: ${err.message}`);
+      }
+    }
+
+    // If all real API calls failed, gracefully fall back to Simulation Mode (mock analysis)
+    console.warn(`[Backend] All real AI providers failed or were not configured. Falling back to Simulation Mode.`);
+    const fallbackProvider = providersToTry[0].getProvider();
+    const mockAnalysis = fallbackProvider.getMockAnalysis(industry.trim());
+    return res.json(mockAnalysis);
   } catch (error: any) {
     console.error('[Backend] Controller Error:', error);
     return res.status(500).json({
