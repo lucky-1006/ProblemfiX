@@ -29,12 +29,14 @@ export class GeminiProvider implements AIProvider {
     console.log(`Analyzing industry "${industry}" using Gemini model "${model}"...`);
 
     const llmCaller = async (systemPrompt: string, userPrompt: string): Promise<string> => {
-      const combinedPrompt = `${systemPrompt}\n\nUser Input:\n${userPrompt}`;
       const response = await axios.post(
         `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${this.apiKey}`,
         {
+          systemInstruction: {
+            parts: [{ text: systemPrompt }]
+          },
           contents: [{
-            parts: [{ text: combinedPrompt }]
+            parts: [{ text: userPrompt }]
           }],
           generationConfig: {
             responseMimeType: 'application/json',
